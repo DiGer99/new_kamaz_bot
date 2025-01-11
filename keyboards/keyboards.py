@@ -1,5 +1,7 @@
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton, BotCommand, Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
+from aiogram import Bot
+from config.config import load_config
 
 
 def create_inline_keyboard(width, *args, **kwargs):
@@ -14,7 +16,7 @@ def create_inline_keyboard(width, *args, **kwargs):
             )
 
     if kwargs:
-        for button, text in kwargs:
+        for button, text in kwargs.items():
             buttons.append(
                 InlineKeyboardButton(text=text,
                                      callback_data=button)
@@ -41,3 +43,5 @@ def create_reply_keyboard(width, *args):
 head_reply_keyboard = create_reply_keyboard(2,
                                             "🔖 Сегодня", "🔜 Завтра",
                                             "📅 Расписание по датам","📝 Расписание на неделю")
+
+
