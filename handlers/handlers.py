@@ -1,4 +1,4 @@
-from aiogram import F, Router
+from aiogram import F, Router, Bot
 from aiogram.types import Message, CallbackQuery
 import database.requests as rq
 from aiogram.fsm.state import default_state
@@ -9,7 +9,8 @@ from keyboards.keyboards import create_inline_keyboard, create_reply_keyboard, h
 from config.config import load_config
 from fsm.fsm import AdminChangeSchedule
 from datetime import datetime, timedelta
- 
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import services.services as serv
 
 handler_router = Router()
 
@@ -18,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 # обработка команды /start
 @handler_router.message(CommandStart())
-async def process_press_start_command(message: Message):
+async def process_press_start_command(message: Message, scheduler: AsyncIOScheduler, bot: Bot):
     await rq.set_user(tg_id=message.from_user.id, full_name=f"{message.from_user.first_name} {message.from_user.last_name}")
     await message.answer(f"Приветствую {message.from_user.first_name}!\nЭто официальный бот 'ФК Камаз'!!!\n\n"
                          f"Я отправлю тебе расписание! Выбери, чтобы ты хотел посмотреть...",
@@ -28,6 +29,7 @@ async def process_press_start_command(message: Message):
             await rq.get_schedule()
         except AttributeError:
             await rq.set_schedule()
+    scheduler.add_job(bot.send_message, "cron", hour=21, args=(message.chat.id, ))
 
 
 # обработка команды /change_schedule для админов и переход в состояние AdminChangeSchedule.wait_schedule
@@ -66,40 +68,27 @@ async def process_schedule_week_button_press(message: Message):
 # Обработка кнопки "Сегодня" 
 @handler_router.message(F.text == "🔖 Сегодня")
 async def process_button_today_press(message: Message):
-    today_date = datetime.now() # получаем сегодняшнюю дату 
-    now_day_month = today_date.strftime("%d.%m") # переводим дату в формат 01.12 - день месяц
-    if now_day_month.startswith("0"): # если день начинается с "0" удаляем его, чтобы постоянно не прописывать его при изменение расписания
-        now_day_month.removeprefix("0")
-    schedule = str(await rq.get_schedule()).split("\n\n") # разделяем расписание по двум переводам строки
-    today_schedule = None
-    for i in schedule: # пробегаем циклом по датам, если совпала с сегодняшней, то присваиваем расписание на день переменной "today_schedule"
-        if i.strip().startswith(now_day_month):
-            today_schedule = i
-            break
-    if today_schedule:
-        await message.answer(text=today_schedule)
-    else:
-        await message.answer(text="На сегодня нет расписания!")
+    await message.answer(text=await serv.today_press_button())
+    # today_date = datetime.now() # получаем сегодняшнюю дату 
+    # now_day_month = today_date.strftime("%d.%m") # переводим дату в формат 01.12 - день месяц
+    # if now_day_month.startswith("0"): # если день начинается с "0" удаляем его, чтобы постоянно не прописывать его при изменение расписания
+    #     now_day_month.removeprefix("0")
+    # schedule = str(await rq.get_schedule()).split("\n\n") # разделяем расписание по двум переводам строки
+    # today_schedule = None
+    # for i in schedule: # пробегаем циклом по датам, если совпала с сегодняшней, то присваиваем расписание на день переменной "today_schedule"
+    #     if i.strip().startswith(now_day_month):
+    #         today_schedule = i
+    #         break
+    # if today_schedule:
+    #     await message.answer(text=today_schedule)
+    # else:
+    #     await message.answer(text="На сегодня нет расписания!")
 
 
 # Обработка кнопки "Завтра"
 @handler_router.message(F.text == "🔜 Завтра")
 async def process_button_press_tommorow(message: Message):
-    today_date = datetime.now()
-    tommorow_date = today_date + timedelta(days=1)
-    stroka_tommorow_date = tommorow_date.strftime("%d.%m")
-    if stroka_tommorow_date.startswith("0"): # если день начинается с "0" удаляем его, чтобы постоянно не прописывать его при изменение расписания
-        stroka_tommorow_date.removeprefix("0")
-    schedule = str(await rq.get_schedule()).split("\n\n") # разделяем расписание по двум переводам строки
-    tommorow_schedule = None
-    for i in schedule:
-        if i.strip().startswith(stroka_tommorow_date):
-            tommorow_schedule = i
-            break
-    if tommorow_schedule:
-        await message.answer(text=tommorow_schedule)
-    else:
-        await message.answer(text="На завтра нет расписания!")
+    await message.answer(text=await serv.tommorow_press_button())
 
 
 # для инлайн кнопок разделить расписание по \n\n и потом разделить каждый элемент по первому пробелу и записать в кнопки

@@ -46,7 +46,6 @@ async def update_schedule(session, schedule):
     await session.commit()
 
 
-
 # выводим расписание 
 @connection
 async def get_schedule(session):
