@@ -1,5 +1,15 @@
 from datetime import datetime, timedelta
 import database.requests as rq
+from aiogram import Bot
+from aiogram.types import Message
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import services.services as serv
+
+
+# Добавляет напоминание в 21 час
+async def remind(message: Message, scheduler: AsyncIOScheduler, bot: Bot):
+    return scheduler.add_job(bot.send_message, "cron", hour=21,
+                      args=(message.chat.id, f"<b>Расписание на завтра:</b>\n\n{await serv.tommorow_press_button()}"))
 
 
 # Нажатие на кнопку "Сегодня"
@@ -47,5 +57,4 @@ async def tommorow_press_button():
 
 # добавляем к дате html разметку для расипсания на неделю
 def add_html(lst_schedule: list) -> list:
-    return [("<u><i>" + i.split("\n", 1)[0] + "</i></u>") + "\n" + i.split("\n", 1)[1] for i in lst_schedule]# разбиваем расписание по датам
-                    # и каждую дату разбиваем по переводу строки, конкатенируем к дате html разметку и конкатенируем к обратному виду
+    return [("<u><i>" + i.split("\n", 1)[0] + "</i></u>" + "\n" + i.split("\n", 1)[1]) for i in lst_schedule] # разбиваем расписание по датам и каждую дату разбиваем по переводу строки, конкатенируем к дате html разметку и конкатенируем к обратному виду

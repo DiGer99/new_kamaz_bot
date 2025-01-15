@@ -23,13 +23,6 @@ async def process_press_start_command(message: Message, scheduler: AsyncIOSchedu
     await message.answer(f"Приветствую {message.from_user.first_name}!\nЭто официальный бот <b>ФК Камаз!!</b>\n\n"
                          f"Я отправлю тебе расписание! Выбери, чтобы ты хотел посмотреть...",
                          reply_markup=head_reply_keyboard)
-    # if str(message.from_user.id) in load_config().admins.ids:
-    #     try:
-    #         await rq.get_schedule()
-    #     except AttributeError:
-    #         await rq.set_schedule()
-    scheduler.add_job(bot.send_message, "cron", hour=21,
-                      args=(message.chat.id, f"<b>Расписание на завтра:</b>\n\n{await serv.tommorow_press_button()}"))
 
 
 # обработка команды /change_schedule для админов и переход в состояние AdminChangeSchedule.wait_schedule
@@ -58,7 +51,6 @@ async def change_schedule_process(message: Message, state: FSMContext):
     await state.clear()
 
 
-
 # Обработка команды /help
 @handler_router.message(Command("help"))
 async def process_help_command_press(message: Message):
@@ -75,7 +67,8 @@ async def process_help_command_press(message: Message):
 async def process_schedule_week_button_press(message: Message):
     full_schedule = str(await rq.get_schedule())
     lst_schedule_dates = full_schedule.split("\n\n")
-    await message.answer(text=f"<b>Расписание на неделю:</b>\n\n{"\n\n".join(serv.add_html(lst_schedule=lst_schedule_dates))}")
+    lst_schedule_dates = "\n\n".join(serv.add_html(lst_schedule=lst_schedule_dates))
+    await message.answer(text=f"<b>Расписание на неделю:</b>\n\n{lst_schedule_dates}")
 
 
 # Обработка кнопки "Сегодня" 
@@ -94,7 +87,7 @@ async def process_button_press_tommorow(message: Message):
 @handler_router.message(F.text == "📅 Расписание по датам")
 async def process_button_schedule_dates_press(message: Message):
     schedule = str(await rq.get_schedule())
-    dates = [i.strip().split("\n", 1)[0].strip() for i in schedule.split("\n\n")]
+    dates = [i.split("\n", 1)[0] for i in schedule.split("\n\n")]
     await message.answer(text="Выберите дату...",
                          reply_markup=create_inline_keyboard(3, *dates))
     
