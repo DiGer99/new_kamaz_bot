@@ -52,4 +52,9 @@ async def get_schedule(session):
     schedule_row = await session.scalar(select(Schedule).where(Schedule.id == 1))
     return schedule_row.full_schedule
 
-    
+
+# получаем всех пользователей
+@connection
+async def newslatter(session):
+    return await session.scalars(select(User))
+     
