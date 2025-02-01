@@ -14,7 +14,7 @@ loger = logging.getLogger(__name__)
 
 async def main():
     await db_main()
-    logging.basicConfig(level=logging.DEBUG,
+    logging.basicConfig(level=logging.ERROR,
                         format="[%(asctime)s] #%(levelname)-8s %(filename)s "
                         "%(lineno)d - %(message)s")
     config: Config = load_config()
