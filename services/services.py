@@ -49,7 +49,7 @@ async def tommorow_press_button():
             break
     if tommorow_schedule:
         schedule_html = tommorow_schedule.split("\n", 1)
-        schedule_html[0] = "<u><i>" + schedule_html[0].strip() + "</i></u>"
+        schedule_html[0] = "<u><i><b>" + schedule_html[0].strip() + "</b></i></u>"
         tommorow_schedule = "\n".join(schedule_html)
         return tommorow_schedule
     else:
@@ -58,4 +58,4 @@ async def tommorow_press_button():
 
 # добавляем к дате html разметку для расипсания на неделю
 def add_html(lst_schedule: list) -> list:
-    return [("<u><i>" + i.split("\n", 1)[0] + "</i></u>" + "\n" + i.split("\n", 1)[1]) for i in lst_schedule] # разбиваем расписание по датам и каждую дату разбиваем по переводу строки, конкатенируем к дате html разметку и конкатенируем к обратному виду
+    return [("<u><i><b>" + i.split("\n", 1)[0] + "</b></i></u>" + "\n" + i.split("\n", 1)[1]) for i in lst_schedule] # разбиваем расписание по датам и каждую дату разбиваем по переводу строки, конкатенируем к дате html разметку и конкатенируем к обратному виду

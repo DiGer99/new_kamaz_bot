@@ -8,7 +8,7 @@ import logging
 from handlers.handlers import handler_router
 from  apscheduler.schedulers.asyncio import AsyncIOScheduler
 from middlewares.middleware import SchedulerMiddleware
-from services.services import remind
+
 
 loger = logging.getLogger(__name__)
 
@@ -29,8 +29,6 @@ async def main():
 
     dp.include_routers(handler_router)
     dp.update.middleware(SchedulerMiddleware(scheduler=scheduler))
-
-    await remind(scheduler=scheduler, bot=bot)
     
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
