@@ -61,7 +61,7 @@ async def scheduler_tommorow_button(bot: Bot):
     # users = await rq.newslatter
     users = [307040977, 1054274399]
     res = await tommorow_press_button()
-    async for user in users:
+    for user in users:
         await bot.send_message(user, text=res)
     
 
