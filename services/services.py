@@ -4,13 +4,14 @@ from aiogram import Bot
 from aiogram.types import Message
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import services.services as serv
+import config.config as config
 
 
-# Добавляет напоминание в 21 час
-# получить из бд список все скаляры, итерироваться и отправлять по айди
-async def remind(scheduler: AsyncIOScheduler, bot: Bot):
-    return scheduler.add_job(bot.send_message, "cron", hour=21,
-                      args=(307040977, f"<b>Расписание на завтра:</b>\n\n{await serv.tommorow_press_button()}"))
+# # Добавляет напоминание в 21 час
+# # получить из бд список все скаляры, итерироваться и отправлять по айди
+# async def remind(scheduler: AsyncIOScheduler, bot: Bot):
+#     return scheduler.add_job(scheduler_tommorow_button, "cron", hour=9, minute=49,
+#                       args=(Bot))
 
 
 # Нажатие на кнопку "Сегодня"
@@ -54,6 +55,14 @@ async def tommorow_press_button():
         return tommorow_schedule
     else:
         return "На завтра нет расписания!"
+    
+
+async def scheduler_tommorow_button(bot: Bot):
+    # users = await rq.newslatter
+    users = [307040977, 1054274399]
+    res = await tommorow_press_button()
+    async for user in users:
+        await bot.send_message(user, text=res)
     
 
 # добавляем к дате html разметку для расипсания на неделю

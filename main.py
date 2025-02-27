@@ -8,6 +8,7 @@ import logging
 from handlers.handlers import handler_router
 from  apscheduler.schedulers.asyncio import AsyncIOScheduler
 from middlewares.middleware import SchedulerMiddleware
+from services.services import scheduler_tommorow_button
 
 
 loger = logging.getLogger(__name__)
@@ -19,13 +20,14 @@ async def main():
                         format="[%(asctime)s] #%(levelname)-8s %(filename)s "
                         "%(lineno)d - %(message)s")
     config: Config = load_config()
-    
-    # loger.debug("Bot on.")
-    scheduler = AsyncIOScheduler(timezone="Europe/Moscow")
-    scheduler.start()
-    
     bot = Bot(token=config.tg_bot.token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp = Dispatcher()
+    
+    scheduler = AsyncIOScheduler(timezone="Europe/Moscow")
+    scheduler.add_job(scheduler_tommorow_button, "cron", hour=21, args=([bot]))
+    scheduler.start()
+    
+    
 
     dp.include_routers(handler_router)
     dp.update.middleware(SchedulerMiddleware(scheduler=scheduler))
