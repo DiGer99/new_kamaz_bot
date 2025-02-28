@@ -59,23 +59,23 @@ async def tommorow_press_button():
     
 
 async def scheduler_tommorow_button(bot: Bot):
-    # users = await rq.newslatter
-    users = [307040977, 1054274399]
+    users_scalars = await rq.newslatter
+    users = [user.tg_id for user in users_scalars]
     res = await tommorow_press_button()
     for user in users:
         try:
-            await bot.send_message(user, text=f"Расписание на завтра:\n\n{res}")
+            await bot.send_message(user, text=f"<b>Расписание на завтра:</b>\n\n{res}")
         except TelegramBadRequest:
             continue
 
 
 async def scheduler_today_button(bot: Bot):
-    # users = await rq.newslatter
-    users = [307040977, 1054274399]
+    users_scalars = await rq.newslatter
+    users = [user.tg_id for user in users_scalars]
     res = await today_press_button()
     for user in users:
         try:
-            await bot.send_message(user, text=f"Расписание на сегодня:\n\n{res}")
+            await bot.send_message(user, text=f"<b>Расписание на сегодня:</b>\n\n{res}")
         except TelegramBadRequest:
             continue
 
