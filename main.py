@@ -8,7 +8,7 @@ import logging
 from handlers.handlers import handler_router
 from  apscheduler.schedulers.asyncio import AsyncIOScheduler
 from middlewares.middleware import SchedulerMiddleware
-from services.services import scheduler_tommorow_button
+from services.services import scheduler_tommorow_button, scheduler_today_button
 
 
 loger = logging.getLogger(__name__)
@@ -24,7 +24,8 @@ async def main():
     dp = Dispatcher()
     
     scheduler = AsyncIOScheduler(timezone="Europe/Moscow")
-    scheduler.add_job(scheduler_tommorow_button, "cron", hour=21, minute=30, args=([bot]))
+    scheduler.add_job(scheduler_tommorow_button, "cron", hour=21, args=([bot]))
+    scheduler.add_job(scheduler_today_button, "cron", hour=9, args=([bot]))
     scheduler.start()
 
     dp.include_routers(handler_router)

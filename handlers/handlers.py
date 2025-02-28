@@ -80,7 +80,6 @@ async def process_all_users_button_press(message: Message):
         await message.answer(text="У вас нет доступа...")
     
 
-
 # обработка команды /newsletter
 @handler_router.message(Command("newsletter"))
 async def process_command_neswletter_press(message: Message, state: FSMContext):
@@ -89,18 +88,17 @@ async def process_command_neswletter_press(message: Message, state: FSMContext):
         await state.set_state(AdminNewsLetter.wait_newsletter)
     else:
         await message.answer(text="У вас нет доступа...")
-    
 
 
 # выводим всех пользователей, принимаем сообщение с рассылкой и отправляем всем пользователям
 @handler_router.message(AdminNewsLetter.wait_newsletter)
 async def newsletter_process(message: Message, bot: Bot, state: FSMContext):
     lst_users = await rq.newslatter()
-    try:
-        for i in lst_users:
+    for i in lst_users:
+        try:
             await bot.send_message(chat_id=i.tg_id, text=message.text)
-    except TelegramBadRequest:
-        pass
+        except TelegramBadRequest:
+            continue
 
     await state.clear()
     await message.answer(text="Сообщение было отправлено...")
@@ -108,7 +106,7 @@ async def newsletter_process(message: Message, bot: Bot, state: FSMContext):
 
 # Ловим кнопку "Расписание на неделю" и выводим "full_schedule" через requests
 @handler_router.message(F.text == "📝 Расписание на неделю")
-async def process_schedule_week_button_press(message: Message):
+async def continueess_schedule_week_button_continues(message: Message):
     full_schedule = str(await rq.get_schedule())
     lst_schedule_dates = full_schedule.split("\n\n")
     lst_schedule_dates = "\n\n".join(serv.add_html(lst_schedule=lst_schedule_dates))
@@ -143,7 +141,10 @@ async def process_callback_button_date_press(calback: CallbackQuery):
     schedule_date = next(i for i in schedule.split("\n\n") if i.strip().startswith(calback.data)) # нулевой индекс из найденных дней по дате
     if schedule_date:
         schedule_html = schedule_date.split("\n", 1)
-        schedule_html[0] = "<u><i>" + schedule_html[0].strip() + "</i></u>"
+        schedule_html[0] = "<u><i><b>" + schedule_html[0].strip() + "</b></i></u>"
         schedule_date = "\n".join(schedule_html)
-    await calback.message.edit_text(text=schedule_date) 
+        await calback.message.edit_text(text=schedule_date)
+    else:
+        await calback.message.edit_text(text="Нет расписания...")
+     
     await calback.answer()

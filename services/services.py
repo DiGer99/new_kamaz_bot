@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import database.requests as rq
 from aiogram import Bot
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.types import Message
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import services.services as serv
@@ -62,8 +63,22 @@ async def scheduler_tommorow_button(bot: Bot):
     users = [307040977, 1054274399]
     res = await tommorow_press_button()
     for user in users:
-        await bot.send_message(user, text=res)
-    
+        try:
+            await bot.send_message(user, text=f"Расписание на завтра:\n\n{res}")
+        except TelegramBadRequest:
+            continue
+
+
+async def scheduler_today_button(bot: Bot):
+    # users = await rq.newslatter
+    users = [307040977, 1054274399]
+    res = await today_press_button()
+    for user in users:
+        try:
+            await bot.send_message(user, text=f"Расписание на сегодня:\n\n{res}")
+        except TelegramBadRequest:
+            continue
+
 
 # добавляем к дате html разметку для расипсания на неделю
 def add_html(lst_schedule: list) -> list:
