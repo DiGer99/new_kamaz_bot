@@ -59,7 +59,7 @@ async def tommorow_press_button():
     
 
 async def scheduler_tommorow_button(bot: Bot):
-    users_scalars = await rq.newslatter
+    users_scalars = await rq.newslatter()
     users = [user.tg_id for user in users_scalars]
     res = await tommorow_press_button()
     for user in users:
@@ -70,7 +70,7 @@ async def scheduler_tommorow_button(bot: Bot):
 
 
 async def scheduler_today_button(bot: Bot):
-    users_scalars = await rq.newslatter
+    users_scalars = await rq.newslatter()
     users = [user.tg_id for user in users_scalars]
     res = await today_press_button()
     for user in users:
