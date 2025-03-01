@@ -24,8 +24,9 @@ async def main():
     dp = Dispatcher()
     
     scheduler = AsyncIOScheduler(timezone="Europe/Moscow")
-    scheduler.add_job(scheduler_tommorow_button, "cron", hour=21, args=([bot]))
     scheduler.add_job(scheduler_today_button, "cron", hour=9, args=([bot]))
+    scheduler.add_job(scheduler_tommorow_button, "cron", hour=21, args=([bot]))
+    
     scheduler.start()
 
     dp.include_routers(handler_router)
