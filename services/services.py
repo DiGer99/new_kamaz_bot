@@ -64,9 +64,13 @@ async def scheduler_tommorow_button(bot: Bot):
 
 async def scheduler_today_button(bot: Bot):
     res = await today_press_button()
-    if res.split("\n", 1)[1].strip().lower() == "выходной":
+    if res == "На сегодня нет расписания!":
         pass
-    
+
+    elif len(res.split("\n", 1)) > 1:
+        if res.split("\n", 1)[1].strip().lower() == "выходной":
+            pass
+
     else:
         users_scalars = await rq.newslatter()
         users = [user.tg_id for user in users_scalars]
