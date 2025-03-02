@@ -8,13 +8,6 @@ import services.services as serv
 import config.config as config
 
 
-# # Добавляет напоминание в 21 час
-# # получить из бд список все скаляры, итерироваться и отправлять по айди
-# async def remind(scheduler: AsyncIOScheduler, bot: Bot):
-#     return scheduler.add_job(scheduler_tommorow_button, "cron", hour=9, minute=49,
-#                       args=(Bot))
-
-
 # Нажатие на кнопку "Сегодня"
 async def today_press_button():
     today_date = datetime.now() # получаем сегодняшнюю дату 
@@ -70,14 +63,18 @@ async def scheduler_tommorow_button(bot: Bot):
 
 
 async def scheduler_today_button(bot: Bot):
-    users_scalars = await rq.newslatter()
-    users = [user.tg_id for user in users_scalars]
     res = await today_press_button()
-    for user in users:
-        try:
-            await bot.send_message(user, text=f"<b>Расписание на сегодня:</b>\n\n{res}")
-        except TelegramBadRequest:
-            continue
+    if res.split("\n", 1)[1].strip().lower() == "выходной":
+        pass
+    
+    else:
+        users_scalars = await rq.newslatter()
+        users = [user.tg_id for user in users_scalars]
+        for user in users:
+            try:
+                await bot.send_message(user, text=f"<b>Расписание на сегодня:</b>\n\n{res}")
+            except TelegramBadRequest:
+                continue
 
 
 # добавляем к дате html разметку для расипсания на неделю
