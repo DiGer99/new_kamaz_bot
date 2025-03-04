@@ -64,6 +64,7 @@ async def scheduler_tommorow_button(bot: Bot):
 
 async def scheduler_today_button(bot: Bot):
     res = await today_press_button()
+    
     if res == "На сегодня нет расписания!":
         pass
 
@@ -71,14 +72,15 @@ async def scheduler_today_button(bot: Bot):
         if res.split("\n", 1)[1].strip().lower() == "выходной":
             pass
 
-    else:
-        users_scalars = await rq.newslatter()
-        users = [user.tg_id for user in users_scalars]
-        for user in users:
-            try:
-                await bot.send_message(user, text=f"<b>Расписание на сегодня:</b>\n\n{res}")
-            except TelegramBadRequest:
-                continue
+    
+        else:
+            users_scalars = await rq.newslatter()
+            users = [user.tg_id for user in users_scalars]
+            for user in users:
+                try:
+                    await bot.send_message(user, text=f"<b>Расписание на сегодня:</b>\n\n{res}")
+                except TelegramBadRequest:
+                    continue
 
 
 # добавляем к дате html разметку для расипсания на неделю
